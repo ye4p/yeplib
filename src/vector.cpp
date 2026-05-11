@@ -36,8 +36,7 @@ namespace yep
         {
             size_ = other.size();
             capacity_ = other.capacity();
-            delete[] data_;
-            data_ = new T[capacity];
+            data_ = new T[capacity_];
             for (int i = 0; i < size_; i++)
             {
                 data[i] = other[i];
@@ -47,6 +46,21 @@ namespace yep
         //  Copy assignment operator
         vector &operator=(const vector &other)
         {
+            size_ = other.size();
+            capacity_ = other.capacity();
+            delete[] data_;
+            data_ = new T[capacity_];
+            for (int i = 0; i < size_; i++)
+            {
+                data[i] = other[i];
+            } 
+        }
+
+        //  Move constructor
+        vector(vector&& other) noexcept {
+            size_ = other.size();
+            capacity_ = other.capacity();
+            data_ = other.data();
         }
 
         size_t size()
@@ -64,11 +78,15 @@ namespace yep
             return !size_;
         }
 
+        T* data() {
+            return data_;
+        }
+
         void push_back(const T &el)
         {
-            if (capacity == 0)
+            if (capacity_ == 0)
             {
-                capacity = 1;
+                capacity_ = 1;
                 data_ = new T[1];
                 data[size] = el;
                 size++;
@@ -93,7 +111,7 @@ namespace yep
 
         void reserve(size_t new_capacity)
         {
-            if (new_capacity <= capacity)
+            if (new_capacity <= capacity_)
             {
                 return;
             }
@@ -103,6 +121,19 @@ namespace yep
                 ir_arr[i] = data_[i];
             delete[] data_;
             data_ = ir_arr;
+        }
+
+        void shrink_to_fit() {
+            if (capacity_<=size_) {
+                return;
+            }
+            capacity_=size_;
+            T* ir_arr = new T[capacity];
+            for (int i=0; i<size_; i++) {
+                ir_arr[i]=data_[i];
+            }
+            delete[] data_;
+            data_=ir_arr;
         }
 
         T &operator[](size_t index)
